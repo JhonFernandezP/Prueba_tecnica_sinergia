@@ -4,12 +4,10 @@
  */
 
 const API_BASE_URL = (() => {
-  // Detecta automáticamente si el proyecto se encuentra en /GestionPacientes/api o /api
+  // Detecta automáticamente la ruta base de la API sin importar el nombre de la carpeta en el servidor
   const pathname = window.location.pathname;
-  if (pathname.includes('/GestionPacientes')) {
-    return '/GestionPacientes/api';
-  }
-  return '/api';
+  const cleanPath = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname.replace(/\/[^/]*\.[^/]*$/, '');
+  return cleanPath ? `${cleanPath}/api` : '/api';
 })();
 
 const StorageKey = {

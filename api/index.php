@@ -25,18 +25,18 @@ set_exception_handler(function (\Throwable $e) {
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 
-// Normalizar la ruta eliminando subdirectorios base (ej: /GestionPacientes/api o /GestionPacientes)
+// Normalizar la ruta eliminando subdirectorios base automáticamente
 $scriptDir = dirname($_SERVER['SCRIPT_NAME'] ?? '');
 $scriptDir = str_replace('\\', '/', $scriptDir);
 
 // Quitar el prefijo base del URI
-if ($scriptDir !== '/' && str_starts_with($uri, $scriptDir)) {
+if ($scriptDir !== '/' && $scriptDir !== '' && str_starts_with($uri, $scriptDir)) {
     $path = substr($uri, strlen($scriptDir));
 } else {
-    // Si se accede con /GestionPacientes/...
-    $baseFolder = '/GestionPacientes';
-    if (str_starts_with($uri, $baseFolder)) {
-        $path = substr($uri, strlen($baseFolder));
+    // Si no coincide con SCRIPT_NAME, buscar la posición de /api
+    $apiPos = strpos($uri, '/api');
+    if ($apiPos !== false) {
+        $path = substr($uri, $apiPos + 4);
     } else {
         $path = $uri;
     }
